@@ -59,9 +59,9 @@ for var in (tabaquismo, alcohol, actividad):
     var['si'] = fuzz.trimf(var.universe, [0, 1, 1])
 
 # Riesgo
-riesgo['bajo']      = fuzz.trimf(riesgo.universe, [0, 5, 8])
-riesgo['moderado']  = fuzz.trimf(riesgo.universe, [6, 7, 9])
-riesgo['alto']      = fuzz.trimf(riesgo.universe, [8, 9, 10])
+riesgo['bajo']      = fuzz.trimf(riesgo.universe, [0, 2,  5])
+riesgo['moderado']  = fuzz.trimf(riesgo.universe, [3, 6,  8])
+riesgo['alto']      = fuzz.trimf(riesgo.universe,  [5, 10, 10])
 
 # ------------------
 # 3) Reglas difusas específicas
@@ -118,6 +118,25 @@ rules = [
     ctrl.Rule(edad['mayor'] & ~presion_sist['muy alta'] & ~presion_diast['muy alta'], riesgo['moderado']),
     ctrl.Rule(edad['mayor'] & colesterol['medio'], riesgo['moderado']),
     ctrl.Rule(edad['mayor'] & glucosa['media'], riesgo['moderado']),
+
+    # Reglas para edad joven (30-40 años)
+    ctrl.Rule(edad['joven'] & (presion_sist['normal'] | presion_diast['normal']), riesgo['bajo']),
+    ctrl.Rule(edad['joven'] & colesterol['bueno'], riesgo['bajo']),
+    ctrl.Rule(edad['joven'] & glucosa['buena'], riesgo['bajo']),
+    ctrl.Rule(edad['joven'] & imc['normal'], riesgo['bajo']),
+    ctrl.Rule(edad['joven'] & (presion_sist['alta'] | presion_diast['alta']), riesgo['moderado']),
+    
+    # Reglas para pacientes jóvenes con factores de riesgo
+    ctrl.Rule(edad['joven'] & colesterol['malo'], riesgo['moderado']),
+    ctrl.Rule(edad['joven'] & glucosa['mala'], riesgo['moderado']),
+    ctrl.Rule(edad['joven'] & imc['sobrepeso'], riesgo['moderado']),
+    ctrl.Rule(edad['joven'] & tabaquismo['si'], riesgo['moderado']),
+
+    # Reglas para pacientes de edad media con factores de riesgo
+    ctrl.Rule(edad['media'] & colesterol['malo'], riesgo['alto']),
+    ctrl.Rule(edad['media'] & glucosa['mala'], riesgo['alto']),
+    ctrl.Rule(edad['media'] & imc['obeso'], riesgo['alto']),
+
 ]
 
 # ------------------

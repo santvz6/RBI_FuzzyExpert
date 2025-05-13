@@ -5,7 +5,7 @@ from patient_input import procesar_fila
 
 csv_data_path = 'csv_data/'
 csv_result_path = 'csv_result/'
-csv_name = 'test1'
+csv_name = 'test2'
 
 
 # Cargamos CSV
