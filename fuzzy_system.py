@@ -119,30 +119,17 @@ rules.append(
 sistema_control = ctrl.ControlSystem(rules)
 
 def evaluar_paciente_difuso(paciente):
-    sim = ctrl.ControlSystemSimulation(sistema_control)
     
-    # Asignamos las entradas y las imprimimos para depurar
+    sim = ctrl.ControlSystemSimulation(sistema_control)
     for key, val in paciente.items():
         sim.input[key] = val
-        #print(f"Entrada {key}: {val}")
     
     try:
-        sim.compute()
-        # Comprobamos si la salida se ha calculado correctamente
+        sim.compute()   
         if 'riesgo' not in sim.output:
-            print("Salida 'riesgo' no encontrada, asignando valor por defecto")
             return 5.0  # Valor por defecto si no se calcula correctamente
-        print(f"Riesgo calculado: {sim.output['riesgo']}")
         return sim.output['riesgo']
+    
     except Exception as e:
-        #print(f"Error durante la simulación: {e}")
-        return 5.0  # Valor por defecto en caso de error
+        return 5.0 
 
-
-# Ejemplo de uso:
-pac = {
-    'edad': 54, 'presion_sist': 130, 'presion_diast': 80,
-    'colesterol': 1, 'glucosa': 1, 'imc': 35.4,
-    'tabaquismo': 0, 'alcohol': 0, 'actividad': 1
-}
-print("Riesgo difuso:", evaluar_paciente_difuso(pac))
