@@ -10,7 +10,7 @@ presion = ctrl.Antecedent(np.arange(60, 241, 1), 'presion')
 presion_diast = ctrl.Antecedent(np.arange(40, 191, 1), 'presion_diast')
 colesterol = ctrl.Antecedent(np.arange(1, 4, 1), 'colesterol')
 glucosa = ctrl.Antecedent(np.arange(1, 4, 1), 'glucosa')
-edad = ctrl.Antecedent(np.arange(30, 67, 1), 'edad')
+edad = ctrl.Antecedent(np.arange(30, 66, 1), 'edad')
 imc = ctrl.Antecedent(np.arange(10, 60, 0.5), 'imc')
 tabaquismo = ctrl.Antecedent(np.arange(0, 2, 1), 'tabaquismo')
 alcohol = ctrl.Antecedent(np.arange(0, 2, 1), 'alcohol')
@@ -22,15 +22,15 @@ riesgo = ctrl.Consequent(np.arange(0, 11, 1), 'riesgo')
 # 2) Funciones de membresía
 # ------------------
 
-# Presión sistólica
-presion['normal']   = fuzz.trapmf(presion.universe, [60,  90, 110, 130])
-presion['alta']     = fuzz.trapmf(presion.universe, [120, 140,150, 180])
-presion['muy alta'] = fuzz.trapmf(presion.universe, [170, 200,210, 240])
+# Presión sistólica (alta)
+presion['normal']   = fuzz.trapmf(presion.universe, [60,  90, 110, 130]) 
+presion['alta']     = fuzz.trapmf(presion.universe, [120, 125,130, 140])
+presion['muy alta'] = fuzz.trapmf(presion.universe, [130, 150,240, 300]) # 300 fuera de rango -> pertenencia total (no finaliza bajando)
 
-# Presión diastólica
-presion_diast['normal']   = fuzz.trapmf(presion_diast.universe, [40,  60, 70, 80])
-presion_diast['alta']     = fuzz.trapmf(presion_diast.universe, [75,  85, 90,105])
-presion_diast['muy alta'] = fuzz.trapmf(presion_diast.universe, [100,130,150,190])
+# Presión diastólica (baja)
+presion_diast['normal']   = fuzz.trapmf(presion_diast.universe, [40,  60, 80,  90])
+presion_diast['alta']     = fuzz.trapmf(presion_diast.universe, [80,  90, 110, 120])
+presion_diast['muy alta'] = fuzz.trapmf(presion_diast.universe, [110, 120,180, 200]) # 200 fuera de rango -> pertenencia total (no finaliza bajando)
 
 # Colesterol
 colesterol['bueno']  = fuzz.trimf(colesterol.universe, [1, 1, 2])
@@ -48,9 +48,10 @@ edad['media']  = fuzz.trimf(edad.universe, [40, 50, 60])
 edad['mayor']  = fuzz.trimf(edad.universe, [55, 60, 65])
 
 # IMC
-imc['normal']    = fuzz.trimf(imc.universe, [18.5, 22,   24.9])
-imc['sobrepeso'] = fuzz.trimf(imc.universe, [25,   28,   29.9])
-imc['obeso']     = fuzz.trimf(imc.universe, [30,   40,   55])
+imc['bajopeso']  = fuzz.trapmf(imc.universe, [5,  10, 16.5, 19]) # 5 fuera de rango
+imc['normal']    = fuzz.trapmf(imc.universe, [18, 19, 24,   24.9])
+imc['sobrepeso'] = fuzz.trapmf(imc.universe, [25, 26, 29,   29.9])
+imc['obeso']     = fuzz.trapmf(imc.universe, [30, 35, 60,   70]) # 70 fuera de rango 
 
 # Tabaquismo, Alcohol, Actividad
 for var in (tabaquismo, alcohol, actividad):
@@ -60,7 +61,7 @@ for var in (tabaquismo, alcohol, actividad):
 # Riesgo
 riesgo['bajo']      = fuzz.trimf(riesgo.universe, [0, 2, 4])
 riesgo['moderado']  = fuzz.trimf(riesgo.universe, [3, 5, 7])
-riesgo['alto']      = fuzz.trimf(riesgo.universe, [5, 8, 10])
+riesgo['alto']      = fuzz.trimf(riesgo.universe, [6, 8, 10])
 
 # ------------------
 # 3) Reglas difusas específicas
