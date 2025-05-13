@@ -76,11 +76,14 @@ rules = [
     ctrl.Rule(tabaquismo['si'] & edad['mayor'], riesgo['alto']),
     ctrl.Rule(actividad['no'] & imc['obeso'], riesgo['alto']),
 
+
     # Bajo riesgo
+    ctrl.Rule(actividad['si'] & presion_sist['normal'] & presion_diast['normal'] &
+    colesterol['bueno'] & glucosa['buena'] & imc['normal'], riesgo['bajo'])
     ctrl.Rule(actividad['si'] & presion_sist['normal'] & colesterol['bueno'], riesgo['bajo']),
     ctrl.Rule(actividad['no'] & colesterol['bueno'], riesgo['bajo']),
     ctrl.Rule(presion_sist['normal'] & imc['normal'], riesgo['bajo']),
-    
+
     # Riesgo moderado
     ctrl.Rule(imc['sobrepeso'] & edad['media'], riesgo['moderado']),
     ctrl.Rule(colesterol['medio'] | glucosa['media'], riesgo['moderado']),
