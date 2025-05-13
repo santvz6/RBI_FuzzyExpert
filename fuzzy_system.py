@@ -6,7 +6,7 @@ from skfuzzy import control as ctrl
 # 1) Definición de variables
 # ------------------
 
-presion = ctrl.Antecedent(np.arange(60, 241, 1), 'presion')
+presion_sist = ctrl.Antecedent(np.arange(60, 241, 1), 'presion_sist')
 presion_diast = ctrl.Antecedent(np.arange(40, 191, 1), 'presion_diast')
 colesterol = ctrl.Antecedent(np.arange(1, 4, 1), 'colesterol')
 glucosa = ctrl.Antecedent(np.arange(1, 4, 1), 'glucosa')
@@ -23,9 +23,9 @@ riesgo = ctrl.Consequent(np.arange(0, 11, 1), 'riesgo')
 # ------------------
 
 # Presión sistólica (alta)
-presion['normal']   = fuzz.trapmf(presion.universe, [60,  90, 110, 130]) 
-presion['alta']     = fuzz.trapmf(presion.universe, [120, 125,130, 140])
-presion['muy alta'] = fuzz.trapmf(presion.universe, [130, 150,240, 300]) # 300 fuera de rango -> pertenencia total (no finaliza bajando)
+presion_sist['normal']   = fuzz.trapmf(presion_sist.universe, [60,  90, 110, 130]) 
+presion_sist['alta']     = fuzz.trapmf(presion_sist.universe, [120, 125,130, 140])
+presion_sist['muy alta'] = fuzz.trapmf(presion_sist.universe, [130, 150,240, 300]) # 300 fuera de rango -> pertenencia total (no finaliza bajando)
 
 # Presión diastólica (baja)
 presion_diast['normal']   = fuzz.trapmf(presion_diast.universe, [40,  60, 80,  90])
@@ -69,22 +69,25 @@ riesgo['alto']      = fuzz.trimf(riesgo.universe, [6, 8, 10])
 
 rules = [
     # Alto riesgo
-    ctrl.Rule(presion['muy alta'] | presion_diast['muy alta'], riesgo['alto']),
+    ctrl.Rule(presion_sist['muy alta'] | presion_diast['muy alta'], riesgo['alto']),
     ctrl.Rule(colesterol['malo'] | glucosa['mala'], riesgo['alto']),
     ctrl.Rule(imc['obeso'] & edad['mayor'], riesgo['alto']),
     ctrl.Rule(tabaquismo['si'] & alcohol['si'], riesgo['alto']),
+    ctrl.Rule(tabaquismo['si'] & edad['mayor'], riesgo['alto']),
     ctrl.Rule(actividad['no'] & imc['obeso'], riesgo['alto']),
 
     # Bajo riesgo
-    ctrl.Rule(actividad['si'] & presion['normal'] & colesterol['bueno'], riesgo['bajo']),
-    ctrl.Rule(presion['normal'] & imc['normal'], riesgo['bajo']),
+    ctrl.Rule(actividad['si'] & presion_sist['normal'] & colesterol['bueno'], riesgo['bajo']),
     ctrl.Rule(actividad['no'] & colesterol['bueno'], riesgo['bajo']),
-
+    ctrl.Rule(presion_sist['normal'] & imc['normal'], riesgo['bajo']),
+    
     # Riesgo moderado
     ctrl.Rule(imc['sobrepeso'] & edad['media'], riesgo['moderado']),
     ctrl.Rule(colesterol['medio'] | glucosa['media'], riesgo['moderado']),
     ctrl.Rule(imc['sobrepeso'] & glucosa['media'], riesgo['moderado']),
-    ctrl.Rule(edad['mayor'] & ~presion['muy alta'] & ~presion_diast['muy alta'], riesgo['moderado']),
+    ctrl.Rule(edad['mayor'] & ~presion_sist['muy alta'] & ~presion_diast['muy alta'], riesgo['moderado']),
+    ctrl.Rule(edad['mayor'] & colesterol['medio'], riesgo['moderado']),
+    ctrl.Rule(edad['mayor'] & glucosa['media'], riesgo['moderado'])
 ]
 
 # ------------------
@@ -95,15 +98,15 @@ rules = [
 # de modo que si ninguna regla específica dispara, siempre tendremos riesgo moderado.
 rules.append(
     ctrl.Rule(
-        (presion['normal'] | presion['alta']   | presion['muy alta']) &
+        (presion_sist['normal']  | presion_sist['alta']  | presion_sist['muy alta']) &
         (presion_diast['normal'] | presion_diast['alta'] | presion_diast['muy alta']) &
-        (colesterol['bueno'] | colesterol['medio'] | colesterol['malo']) &
-        (glucosa['buena']     | glucosa['media']     | glucosa['mala']) &
-        (edad['joven']        | edad['media']        | edad['mayor']) &
-        (imc['normal']        | imc['sobrepeso']     | imc['obeso']) &
-        (tabaquismo['no']     | tabaquismo['si']) &
-        (alcohol['no']        | alcohol['si']) &
-        (actividad['no']      | actividad['si']),
+        (colesterol['bueno']     | colesterol['medio']   | colesterol['malo']) &
+        (glucosa['buena']        | glucosa['media']      | glucosa['mala']) &
+        (edad['joven']           | edad['media']         | edad['mayor']) &
+        (imc['bajopeso']         | imc['normal']         | imc['sobrepeso'] | imc['obeso']) &
+        (tabaquismo['no']        | tabaquismo['si']) &
+        (alcohol['no']           | alcohol['si']) &
+        (actividad['no']         | actividad['si']),
         riesgo['moderado'],
         label='default_moderado'
     )
@@ -113,7 +116,7 @@ rules.append(
 # 5) Sistema y función de evaluación
 # ------------------
 
-sistema_control    = ctrl.ControlSystem(rules)
+sistema_control = ctrl.ControlSystem(rules)
 
 def evaluar_paciente_difuso(paciente):
     sim = ctrl.ControlSystemSimulation(sistema_control)
@@ -138,7 +141,7 @@ def evaluar_paciente_difuso(paciente):
 
 # Ejemplo de uso:
 pac = {
-    'edad': 54, 'presion': 130, 'presion_diast': 80,
+    'edad': 54, 'presion_sist': 130, 'presion_diast': 80,
     'colesterol': 1, 'glucosa': 1, 'imc': 35.4,
     'tabaquismo': 0, 'alcohol': 0, 'actividad': 1
 }
