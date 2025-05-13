@@ -1,7 +1,7 @@
 def procesar_fila(row):
     return {
         'edad': row['AGE'],
-        'presion': row['AP_HIGH'],
+        'presion_sist': row['AP_HIGH'],
         'presion_diast': row['AP_LOW'],
         'colesterol': row['CHOLESTEROL'],
         'glucosa': row['GLUCOSE'],
