@@ -6,8 +6,8 @@ from fuzzy_system import presion_sist, presion_diast, colesterol, glucosa, edad,
 from patient_input import procesar_fila
 
 
-GUARDAR_FUNCIONES = True
-ANALIZAR_CSV = False
+GUARDAR_FUNCIONES = False
+ANALIZAR_CSV = True
 
 
 ########################## GUARDADO DE FUNCIONES DE PERTENENCIA

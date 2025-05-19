@@ -30,7 +30,7 @@ presion_sist['muy alta'] = fuzz.trapmf(presion_sist.universe, [130, 150,240, 300
 # Presión diastólica (baja)
 presion_diast['normal']   = fuzz.trapmf(presion_diast.universe, [40,  60, 80,  90])
 presion_diast['alta']     = fuzz.trapmf(presion_diast.universe, [80,  90, 110, 120])
-presion_diast['muy alta'] = fuzz.trapmf(presion_diast.universe, [110, 120,180, 200]) # 200 fuera de rango -> pertenencia total (no finaliza bajando)
+presion_diast['muy alta'] = fuzz.trapmf(presion_diast.universe, [110, 120,191, 200]) # 200 fuera de rango -> pertenencia total (no finaliza bajando)
 
 # Colesterol
 colesterol['bueno']  = fuzz.trimf(colesterol.universe, [1, 1, 2])
@@ -43,9 +43,9 @@ glucosa['media']  = fuzz.trimf(glucosa.universe, [1, 2, 3])
 glucosa['mala']   = fuzz.trimf(glucosa.universe, [2, 3, 3])
 
 # Edad
-edad['joven']  = fuzz.trimf(edad.universe, [30, 35, 45])
+edad['joven']  = fuzz.trapmf(edad.universe, [0, 30, 35, 45]) # 0 fuera de rango
 edad['media']  = fuzz.trimf(edad.universe, [40, 50, 60])
-edad['mayor']  = fuzz.trimf(edad.universe, [55, 60, 65])
+edad['mayor']  = fuzz.trapmf(edad.universe, [55, 60, 65, 100]) # 100 fuera de rango
 
 # IMC
 imc['bajopeso']  = fuzz.trapmf(imc.universe, [5,  10, 16.5, 19]) # 5 fuera de rango
